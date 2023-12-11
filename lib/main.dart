@@ -84,24 +84,42 @@ class _HomePageState extends State<HomePage> {
             return ListView.builder(
                 itemBuilder: (context, index) {
                   Map<String, dynamic> user = users[index];
-                  return Container(
-                    padding: const EdgeInsets.all(10.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        //detail page
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DetailPage(user: user, index: index),
+                  return Dismissible(
+                    key: Key(user['users_id'].toString()),
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: Icon(Icons.delete, color: Colors.white),
+                    ),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      setState(() {
+                        users.removeAt(index);
+                        //kasih function delete
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Users deleted successfully')));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          //detail page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DetailPage(user: user, index: index),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          child: ListTile(
+                            title: Text(user['users_nm']),
+                            subtitle: Text(user['users_status'].toString()),
+                            leading: Icon(Icons.apps),
                           ),
-                        );
-                      },
-                      child: Card(
-                        child: ListTile(
-                          title: Text(user['users_nm']),
-                          subtitle: Text(user['users_status'].toString()),
-                          leading: Icon(Icons.apps),
                         ),
                       ),
                     ),
