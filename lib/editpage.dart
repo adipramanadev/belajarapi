@@ -19,8 +19,8 @@ class _EditPageState extends State<EditPage> {
   TextEditingController _txtPassword = TextEditingController();
 
   //edit data
-  void editData(String keyCode, String users_nm, String users_email) {
-    String apiUrl = "https://dev-api.arminadaily.id/mobiledev/update/$keyCode";
+  void editData(String key_code, String users_nm, String users_email) {
+    String apiUrl = "https://dev-api.arminadaily.id/mobiledev/update/$key_code";
     String key = "TESTING";
     http.post(Uri.parse(apiUrl), headers: {
       'Accept': 'application/json',
@@ -113,6 +113,12 @@ class _EditPageState extends State<EditPage> {
                 backgroundColor: Colors.blue,
               ),
               onPressed: () {
+                editData(
+                  widget.user['key_code'],
+                  _txtNama.text.trim(),
+                  _txtEmail.text.trim(),
+                );
+                //redirect ke homepage
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: ((context) => HomePage()),
