@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'main.dart';
+import 'package:http/http.dart' as http;
 
 class EditPage extends StatefulWidget {
   final Map<String, dynamic> user; //array
@@ -16,6 +17,31 @@ class _EditPageState extends State<EditPage> {
   TextEditingController _txtNama = TextEditingController();
   TextEditingController _txtEmail = TextEditingController();
   TextEditingController _txtPassword = TextEditingController();
+
+  //edit data
+  void editData(String keyCode, String users_nm, String users_email) {
+    String apiUrl = "https://dev-api.arminadaily.id/mobiledev/update/$keyCode";
+    String key = "TESTING";
+    http.post(Uri.parse(apiUrl), headers: {
+      'Accept': 'application/json',
+      'adsignature': '$key',
+    }, body: {
+      'users_nm': _txtNama.text,
+      'users_email': _txtEmail.text,
+    }).then((response) {
+      print('Reponse status: ${response.statusCode}');
+      print('Reponse body: ${response.body}');
+    });
+  }
+
+  //muncul data
+  @override
+  void initState() {
+    super.initState();
+    _txtNama.text = widget.user['users_nm'];
+    _txtEmail.text = widget.user['users_email'];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +55,7 @@ class _EditPageState extends State<EditPage> {
       ),
       body: Container(
         child: ListView(
-          padding: const EdgeInsets.only(top: 62, left: 12, right: 12),
+          padding: const EdgeInsets.only(top: 20, left: 12, right: 12),
           children: [
             Container(
               height: 50.0,
@@ -58,7 +84,7 @@ class _EditPageState extends State<EditPage> {
                   ),
                   labelText: 'Email',
                   hintText: 'Masukkan Email',
-                  icon: Icon(Icons.person),
+                  icon: Icon(Icons.mail),
                 ),
               ),
             ),
@@ -75,7 +101,7 @@ class _EditPageState extends State<EditPage> {
                   ),
                   labelText: 'Password',
                   hintText: 'Password',
-                  icon: Icon(Icons.person),
+                  icon: Icon(Icons.lock),
                 ),
               ),
             ),
@@ -94,7 +120,7 @@ class _EditPageState extends State<EditPage> {
                 );
               },
               child: Text(
-                'TAMBAH DATA',
+                'Edit DATA',
                 style: TextStyle(color: Colors.white),
               ),
             ),
