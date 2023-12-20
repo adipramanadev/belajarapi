@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'main.dart';
+import 'homepage.dart';
 import 'package:http/http.dart' as http;
 
 class EditPage extends StatefulWidget {
