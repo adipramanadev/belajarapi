@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.red,
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.only(right: 20.0),
-                      child: Icon(Icons.delete, color: Colors.white),
+                      child: const Icon(Icons.delete, color: Colors.white),
                     ),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
@@ -98,8 +98,11 @@ class _HomePageState extends State<HomePage> {
                         users.removeAt(index);
                         //kasih function delete
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Users deleted successfully')));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Users deleted successfully'),
+                        ),
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10.0),
