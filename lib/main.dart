@@ -45,6 +45,25 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  //delete function
+  Future<void> deleteData(String key_code) async {
+    final String deleteUrl = "https://dev-api.arminadaily.id/mobiledev/delete/";
+    final response = await http.post(Uri.parse(deleteUrl), body: {
+      'key_code': '$key_code'
+    }, headers: {
+      'Accept': 'application/json',
+      'adsignature': '$token',
+    });
+
+    //response status
+    if (response.statusCode == 200) {
+      // Map<String, dynamic> data = json.decode(response.body);
+      print("Data deleted successfully");
+    } else {
+      print("Data deleted failed");
+    }
+  }
+
   // @override
   // void initState() {
   //   super.initState();
@@ -94,15 +113,23 @@ class _HomePageState extends State<HomePage> {
                     ),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
-                      setState(() {
-                        users.removeAt(index);
-                        //kasih function delete
+                      deleteData(user['key_code'].toString()).then((_) {
+                        setState(() {
+                          users.removeAt(index);
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Users deleted successfully'),
+                          ),
+                        );
+                      }).catchError((error) {
+                        print('Error: $error');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to delete user'),
+                          ),
+                        );
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Users deleted successfully'),
-                        ),
-                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10.0),
