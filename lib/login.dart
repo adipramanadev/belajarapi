@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:belajarapi/homepage.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
+import "package:shared_preferences/shared_preferences.dart";
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,7 +15,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
-
+  String userEmail = "";
   //function login
   Future<void> login(String email, String password) async {
     String token = "TESTING";
@@ -22,6 +24,7 @@ class _LoginState extends State<Login> {
       Uri.parse(url),
       headers: {
         "token": "$token",
+        'Accept': 'application/json',
       },
       body: {
         'users_email': email,
@@ -32,6 +35,22 @@ class _LoginState extends State<Login> {
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data['status'] == 'true' && data['responseCode'] == '00') {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        String? userDataString = prefs.getString('userData');
+        if (userDataString != null) {
+          Map<String, dynamic> userData = json.decode(userDataString);
+          setState(() {
+            userEmail = userData['users_email'];
+          });
+        }
+        // prefs.setString("userData", userData);
+        //navigation ke homepage
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
         //login sukses
         print("login Sukses: $data['data]");
       } else {

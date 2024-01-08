@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "API",
+          "Email : $userEmail",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blue,
