@@ -43,7 +43,7 @@ class _LoginState extends State<Login> {
     int? loginTimestamp = prefs.getInt('loginTimestamp');
     if (loginTimestamp != null) {
       //sesuaikan durasi sesi login(misalkan 3 hari)
-      final Duration sessionDuration = Duration(days: 3);
+      final Duration sessionDuration = Duration(days: 2);
       DateTime loginTime = DateTime.fromMillisecondsSinceEpoch(loginTimestamp);
       DateTime currentTime = DateTime.now();
       return currentTime.difference(loginTime) <= sessionDuration;
@@ -92,10 +92,25 @@ class _LoginState extends State<Login> {
     }
   }
 
+  Future<void> checkSessionValidity() async {
+    bool isValid = await isLoginSessionValid();
+    if (!isValid) {
+      logout();
+    }
+  }
+
+  void logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("userData");
+    setState(() {
+      isLoggedin = false;
+    });
+  }
+
   @override
   void initState() {
     checkLogin();
-
+    checkSessionValidity();
     super.initState();
   }
 
