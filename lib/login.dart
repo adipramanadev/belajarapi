@@ -16,6 +16,8 @@ class _LoginState extends State<Login> {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
   String userEmail = "";
+  bool isLoggedin = false;
+
   //function login
   Future<void> login(String email, String password) async {
     String token = "TESTING";
@@ -23,7 +25,7 @@ class _LoginState extends State<Login> {
     var response = await http.post(
       Uri.parse(url),
       headers: {
-        "token": "$token",
+        "token": token,
         'Accept': 'application/json',
       },
       body: {
@@ -36,15 +38,18 @@ class _LoginState extends State<Login> {
       var data = json.decode(response.body);
       if (data['status'] == 'true' && data['responseCode'] == '00') {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        String? userDataString = prefs.getString('userData');
-        if (userDataString != null) {
-          Map<String, dynamic> userData = json.decode(userDataString);
-          setState(() {
-            userEmail = userData['users_email'];
-          });
-        }
-        // prefs.setString("userData", userData);
-        //navigation ke homepage
+        // String? userDataString = prefs.getString('userData');
+        prefs.setString("userData", json.encode(data['data']));
+        setState(() {
+          userEmail = data['data']['users_email'];
+          isLoggedin = true;
+        });
+        // if (userDataString != null) {
+        //   Map<String, dynamic> userData = json.decode(userDataString);
+        //   setState(() {
+        //     userEmail = userData['users_email'];
+        //   });
+        // }
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -61,6 +66,9 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoggedin) {
+      return HomePage();
+    }
     return Scaffold(
       body: Stack(
         children: [
