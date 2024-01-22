@@ -48,6 +48,7 @@ class _LoginState extends State<Login> {
       DateTime currentTime = DateTime.now();
       return currentTime.difference(loginTime) <= sessionDuration;
     }
+    return false;
   }
 
   //function login
@@ -76,6 +77,7 @@ class _LoginState extends State<Login> {
           isLoggedin = true;
         });
         checkLogin();
+        await saveLoginTimeStamp();
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -93,6 +95,7 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     checkLogin();
+
     super.initState();
   }
 
