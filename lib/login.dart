@@ -17,7 +17,7 @@ class _LoginState extends State<Login> {
   TextEditingController txtPassword = TextEditingController();
   String userEmail = "";
   bool isLoggedin = false;
-
+  //simpan prefrences
   Future<void> checkLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userDataString = prefs.getString('userData');
@@ -29,6 +29,26 @@ class _LoginState extends State<Login> {
         isLoggedin = true;
       });
     }
+  }
+
+  //ini untuk logintimestamp
+  Future<void> saveLoginTimeStamp() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('loginTimestamp', DateTime.now().millisecondsSinceEpoch);
+  }
+
+  //fungsi periksa login
+  Future<bool> isLoginSessionValid() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? loginTimestamp = prefs.getInt('loginTimestamp');
+    if (loginTimestamp != null) {
+      //sesuaikan durasi sesi login(misalkan 3 hari)
+      final Duration sessionDuration = Duration(days: 2);
+      DateTime loginTime = DateTime.fromMillisecondsSinceEpoch(loginTimestamp);
+      DateTime currentTime = DateTime.now();
+      return currentTime.difference(loginTime) <= sessionDuration;
+    }
+    return false;
   }
 
   //function login
@@ -57,6 +77,7 @@ class _LoginState extends State<Login> {
           isLoggedin = true;
         });
         checkLogin();
+        await saveLoginTimeStamp();
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -71,9 +92,25 @@ class _LoginState extends State<Login> {
     }
   }
 
+  Future<void> checkSessionValidity() async {
+    bool isValid = await isLoginSessionValid();
+    if (!isValid) {
+      logout();
+    }
+  }
+
+  void logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("userData");
+    setState(() {
+      isLoggedin = false;
+    });
+  }
+
   @override
   void initState() {
     checkLogin();
+    checkSessionValidity();
     super.initState();
   }
 
