@@ -17,7 +17,7 @@ class _LoginState extends State<Login> {
   TextEditingController txtPassword = TextEditingController();
   String userEmail = "";
   bool isLoggedin = false;
-
+  //simpan prefrences
   Future<void> checkLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userDataString = prefs.getString('userData');
@@ -28,6 +28,25 @@ class _LoginState extends State<Login> {
         userEmail = userData['users_email'];
         isLoggedin = true;
       });
+    }
+  }
+
+  //ini untuk logintimestamp
+  Future<void> saveLoginTimeStamp() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('loginTimestamp', DateTime.now().millisecondsSinceEpoch);
+  }
+
+  //fungsi periksa login
+  Future<bool> isLoginSessionValid() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? loginTimestamp = prefs.getInt('loginTimestamp');
+    if (loginTimestamp != null) {
+      //sesuaikan durasi sesi login(misalkan 3 hari)
+      final Duration sessionDuration = Duration(days: 3);
+      DateTime loginTime = DateTime.fromMillisecondsSinceEpoch(loginTimestamp);
+      DateTime currentTime = DateTime.now();
+      return currentTime.difference(loginTime) <= sessionDuration;
     }
   }
 
