@@ -18,6 +18,19 @@ class _LoginState extends State<Login> {
   String userEmail = "";
   bool isLoggedin = false;
 
+  Future<void> checkLogin() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userDataString = prefs.getString('userData');
+
+    if (userDataString != null) {
+      Map<String, dynamic> userData = json.decode(userDataString);
+      setState(() {
+        userEmail = userData['users_email'];
+        isLoggedin = true;
+      });
+    }
+  }
+
   //function login
   Future<void> login(String email, String password) async {
     String token = "TESTING";
@@ -38,18 +51,12 @@ class _LoginState extends State<Login> {
       var data = json.decode(response.body);
       if (data['status'] == 'true' && data['responseCode'] == '00') {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        // String? userDataString = prefs.getString('userData');
         prefs.setString("userData", json.encode(data['data']));
         setState(() {
           userEmail = data['data']['users_email'];
           isLoggedin = true;
         });
-        // if (userDataString != null) {
-        //   Map<String, dynamic> userData = json.decode(userDataString);
-        //   setState(() {
-        //     userEmail = userData['users_email'];
-        //   });
-        // }
+        checkLogin();
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -62,6 +69,12 @@ class _LoginState extends State<Login> {
         print("Error: $response.reasonPharase");
       }
     }
+  }
+
+  @override
+  void initState() {
+    checkLogin();
+    super.initState();
   }
 
   @override
