@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'detailpage.dart';
@@ -50,21 +51,31 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getData();
-  // }
+  String? userEmail = '';
+  @override
+  void initState() {
+    super.initState();
+    _loadUserEmail();
+  }
+
+  Future<void> _loadUserEmail() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = json.decode(prefs.getString('userData')!)['users_email'];
+    setState(() {
+      userEmail = email ?? "Email tidak ditemukan";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "API",
+          "Email : $userEmail",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blue,
+        automaticallyImplyLeading: false,
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {

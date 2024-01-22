@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:belajarapi/homepage.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
+import "package:shared_preferences/shared_preferences.dart";
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,6 +15,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
+  String userEmail = "";
+  bool isLoggedin = false;
 
   //function login
   Future<void> login(String email, String password) async {
@@ -21,7 +25,8 @@ class _LoginState extends State<Login> {
     var response = await http.post(
       Uri.parse(url),
       headers: {
-        "token": "$token",
+        "token": token,
+        'Accept': 'application/json',
       },
       body: {
         'users_email': email,
@@ -32,6 +37,25 @@ class _LoginState extends State<Login> {
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data['status'] == 'true' && data['responseCode'] == '00') {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        // String? userDataString = prefs.getString('userData');
+        prefs.setString("userData", json.encode(data['data']));
+        setState(() {
+          userEmail = data['data']['users_email'];
+          isLoggedin = true;
+        });
+        // if (userDataString != null) {
+        //   Map<String, dynamic> userData = json.decode(userDataString);
+        //   setState(() {
+        //     userEmail = userData['users_email'];
+        //   });
+        // }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
         //login sukses
         print("login Sukses: $data['data]");
       } else {
@@ -42,6 +66,9 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoggedin) {
+      return HomePage();
+    }
     return Scaffold(
       body: Stack(
         children: [
